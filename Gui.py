@@ -112,7 +112,7 @@ def guiMain(settings=None):
     frames = {}
 
     mainWindow = Tk()
-    mainWindow.wm_title("OoT Randomizer %s" % ESVersion)
+    mainWindow.wm_title("Mooter")
     mainWindow.resizable(False, False)
 
     set_icon(mainWindow)
