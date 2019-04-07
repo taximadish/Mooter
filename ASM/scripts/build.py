@@ -21,9 +21,8 @@ os.chdir(run_dir)
 
 os.environ['PATH'] = script_dir + os.pathsep + os.environ['PATH']
 
-if compile_c:
-    os.chdir(run_dir + '/c')
-    call(['make'])
+os.chdir(run_dir + '/c')
+call(['make'])
 
 os.chdir(run_dir + '/src')
 call(['armips', '-sym2', '../build/asm_symbols.txt', 'build.asm'])
