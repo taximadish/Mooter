@@ -27,6 +27,7 @@
 #define DPAD_L 0x0200
 #define DPAD_R 0x0100
 #define DPAD_D 0x0400
+#define DPAD_U 0x0800
 
 void handle_dpad();
 void draw_dpad();

@@ -14,27 +14,40 @@ typedef void(*usebutton_t)(z64_game_t *game, z64_link_t *link, uint8_t item, uin
 #define z64_playsfx   ((playsfx_t)      0x800C806C)
 #define z64_usebutton ((usebutton_t)    0x8038C9A0)
 
+#define ADULT 0
+
+#define KOKIRI_BOOTS 1
+#define IRON_BOOTS 2
+#define HOVER_BOOTS 3
+
 void handle_dpad() {
 
     uint16_t pad_pressed = z64_game.common.input[0].pad_pressed;
 
     if (CAN_USE_DPAD && DISPLAY_DPAD){
-        if(z64_file.link_age == 0) {
+        if(z64_file.link_age == ADULT) {
+			if (pad_pressed & DPAD_U) {
+				if (z64_file.equip_boots == KOKIRI_BOOTS) return;
+				else z64_file.equip_boots = KOKIRI_BOOTS;
+				z64_UpdateEquipment(&z64_game, &z64_link);
+				z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
+			}
+
             if (pad_pressed & DPAD_L && z64_file.iron_boots) {
-                if (z64_file.equip_boots == 2) z64_file.equip_boots = 1;
-                else z64_file.equip_boots = 2;
+                if (z64_file.equip_boots == IRON_BOOTS) return;
+                else z64_file.equip_boots = IRON_BOOTS;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
 
-            if ((pad_pressed & DPAD_D) && z64_file.hover_boots) {
-                if (z64_file.equip_boots == 3) z64_file.equip_boots = 1;
-                else z64_file.equip_boots = 3;
+            if ((pad_pressed & DPAD_R) && z64_file.hover_boots) {
+                if (z64_file.equip_boots == HOVER_BOOTS) return;
+                else z64_file.equip_boots = HOVER_BOOTS;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
         }
-        if ((pad_pressed & DPAD_R) && CAN_USE_OCARINA){
+        if ((pad_pressed & DPAD_D) && CAN_USE_OCARINA){
             z64_usebutton(&z64_game,&z64_link,z64_file.items[0x07], 2);
         }
     }
