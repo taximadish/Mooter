@@ -14,26 +14,57 @@ typedef void(*usebutton_t)(z64_game_t *game, z64_link_t *link, uint8_t item, uin
 #define z64_playsfx   ((playsfx_t)      0x800C806C)
 #define z64_usebutton ((usebutton_t)    0x8038C9A0)
 
-void handle_dpad() {
+#define ADULT	0
+#define CHILD	1
 
+#define KOKIRI_BOOTS	1
+#define IRON_BOOTS		2
+#define HOVER_BOOTS		3
+
+#define DEKU_SHIELD		1
+#define HYLIAN_SHIELD	2
+
+void handle_dpad() {
     uint16_t pad_pressed = z64_game.common.input[0].pad_pressed;
 
     if (CAN_USE_DPAD && DISPLAY_DPAD){
-        if(z64_file.link_age == 0) {
+        if(z64_file.link_age == ADULT) {
+			if (pad_pressed & DPAD_U) {
+				if (z64_file.equip_boots == KOKIRI_BOOTS) return;
+				else z64_file.equip_boots = KOKIRI_BOOTS;
+				z64_UpdateEquipment(&z64_game, &z64_link);
+				z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
+			}
+
             if (pad_pressed & DPAD_L && z64_file.iron_boots) {
-                if (z64_file.equip_boots == 2) z64_file.equip_boots = 1;
-                else z64_file.equip_boots = 2;
+                if (z64_file.equip_boots == IRON_BOOTS) return;
+                else z64_file.equip_boots = IRON_BOOTS;
                 z64_UpdateEquipment(&z64_game, &z64_link);
-                z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
+                z64_playsfx(0x80D, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
 
             if ((pad_pressed & DPAD_R) && z64_file.hover_boots) {
-                if (z64_file.equip_boots == 3) z64_file.equip_boots = 1;
-                else z64_file.equip_boots = 3;
+                if (z64_file.equip_boots == HOVER_BOOTS) return;
+                else z64_file.equip_boots = HOVER_BOOTS;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
-        }
+		}
+		else if (z64_file.link_age == CHILD) {
+			if (pad_pressed & DPAD_L && z64_file.deku_shield) {
+				if (z64_file.equip_shield == DEKU_SHIELD) return;
+				else z64_file.equip_shield = DEKU_SHIELD;
+				z64_UpdateEquipment(&z64_game, &z64_link);
+				z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
+			}
+
+			if ((pad_pressed & DPAD_R) && z64_file.hylian_shield) {
+				if (z64_file.equip_shield == HYLIAN_SHIELD) return;
+				else z64_file.equip_shield = HYLIAN_SHIELD;
+				z64_UpdateEquipment(&z64_game, &z64_link);
+				z64_playsfx(0x81F, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
+			}
+		}
         if ((pad_pressed & DPAD_D) && CAN_USE_OCARINA){
             z64_usebutton(&z64_game,&z64_link,z64_file.items[0x07], 2);
         }
@@ -55,7 +86,17 @@ void draw_dpad() {
         if (alpha == 0xFF && !CAN_USE_DPAD)
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x46);
 
-        if (z64_file.iron_boots && z64_file.link_age==0) {
+		if ((z64_file.iron_boots || z64_file.hover_boots) && z64_file.link_age == ADULT) {
+			sprite_load(db, &items_sprite, Z64_ITEM_KOKIRI_BOOTS, 1);
+			if (z64_file.equip_boots == KOKIRI_BOOTS) {
+				sprite_draw(db, &items_sprite, 0, 271, 51, 16, 16);
+			}
+			else {
+				sprite_draw(db, &items_sprite, 0, 273, 53, 12, 12);
+			}
+		}
+
+        if (z64_file.iron_boots && z64_file.link_age==ADULT) {
             sprite_load(db, &items_sprite, 69, 1);
             if (z64_file.equip_boots == 2) {
                 sprite_draw(db, &items_sprite, 0, 258, 64, 16, 16);
@@ -65,7 +106,7 @@ void draw_dpad() {
             }
         }
 
-        if (z64_file.hover_boots && z64_file.link_age == 0) {
+        if (z64_file.hover_boots && z64_file.link_age == ADULT) {
             sprite_load(db, &items_sprite, 70, 1);
             if (z64_file.equip_boots == 3) {
                 sprite_draw(db, &items_sprite, 0, 283, 64, 16, 16);
@@ -74,6 +115,27 @@ void draw_dpad() {
                 sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
             }
         }
+
+		if (z64_file.deku_shield && z64_file.link_age == CHILD) {
+			sprite_load(db, &items_sprite, Z64_ITEM_DEKU_SHIELD, 1);
+			if (z64_file.equip_shield == DEKU_SHIELD) {
+				sprite_draw(db, &items_sprite, 0, 258, 64, 16, 16);
+            }
+            else {
+                sprite_draw(db, &items_sprite, 0, 260, 66, 12, 12);
+            }
+		}
+
+		if (z64_file.hylian_shield && z64_file.link_age == CHILD) {
+			sprite_load(db, &items_sprite, Z64_ITEM_HYLIAN_SHIELD, 1);
+			if (z64_file.equip_shield == HYLIAN_SHIELD) {
+				sprite_draw(db, &items_sprite, 0, 283, 64, 16, 16);
+			}
+			else {
+				sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
+			}
+		}
+
         if (z64_file.items[0x07] != -1){
             if(alpha==0xFF && !CAN_USE_OCARINA) gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x46);
             sprite_load(db, &items_sprite, z64_file.items[0x07], 1);

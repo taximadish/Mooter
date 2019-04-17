@@ -15,7 +15,8 @@
                        0x00200000 | \
                        0x08000000)
 
-#define DISPLAY_DPAD        (((z64_file.iron_boots || z64_file.hover_boots) && z64_file.link_age==0) || z64_file.items[0x07] == 0x07 || z64_file.items[0x07] == 0x08)
+#define DISPLAY_DPAD        1
+// (((z64_file.iron_boots || z64_file.hover_boots) && z64_file.link_age==0) || z64_file.items[0x07] == 0x07 || z64_file.items[0x07] == 0x08)
 
 #define CAN_USE_DPAD        (((z64_link.state_flags_1 & BLOCK_DPAD) == 0) && \
                             ((uint32_t)z64_ctxt.state_dtor==z64_state_ovl_tab[3].vram_dtor) && \
@@ -27,6 +28,7 @@
 #define DPAD_L 0x0200
 #define DPAD_R 0x0100
 #define DPAD_D 0x0400
+#define DPAD_U 0x0800
 
 void handle_dpad();
 void draw_dpad();

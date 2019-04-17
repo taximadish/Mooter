@@ -244,7 +244,7 @@ class SaveContext():
                     address_value = address_value[sub_address]
                     prev_sub_address = sub_address
                 if not isinstance(address_value, Address):
-                    raise ValueError('%s does not resolve to an Adress in SaveContext' % (sub_address))
+                    raise ValueError('%s does not resolve to an Address in SaveContext' % (sub_address))
 
                 if isinstance(value, int) and value < address_value.get_value():
                     continue
@@ -834,6 +834,7 @@ class SaveContext():
         "Claim Check"    : {'item_slot.adult_trade'     : 'claim_check'},
         "Weird Egg"      : {'item_slot.child_trade'     : 'weird_egg'},
         "Chicken"        : {'item_slot.child_trade'     : 'chicken'},
+        "Bunny Hood"     : {'item_slot.child_trade'     : 'bunny_hood'},
         "Goron Tunic"    : {'equip_items.goron_tunic'   : True},
         "Zora Tunic"     : {'equip_items.zora_tunic'    : True},
         "Iron Boots"     : {'equip_items.iron_boots'    : True},

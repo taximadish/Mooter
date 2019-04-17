@@ -2,6 +2,7 @@ import random
 import struct
 import itertools
 import re
+import SamCustom
 
 from World import World
 from Rom import Rom
@@ -490,7 +491,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_bytes(0x22769E4, [0xFF, 0xFF, 0xFF, 0xFF])
 
     # Zora moves quickly
-    rom.write_bytes(0xE56924, [0x00, 0x00, 0x00, 0x00])
+    if (SamCustom.SKIP_KING_ZORA_MWEEPS):
+        rom.write_bytes(0xE56924, [0x00, 0x00, 0x00, 0x00])
 
     # Speed Jabu Jabu swallowing Link
     rom.write_bytes(0xCA0784, [0x00, 0x18, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
@@ -942,12 +944,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         world.distribution.give_item('Serenade of Water')
         world.distribution.give_item('Farores Wind')
 
+    for item in SamCustom.START_WITH:
+        world.distribution.give_item(item)
+
     # Set starting time of day
     if world.starting_tod != 'default':
         tod = {
             'midnight':      0x0000,
             'witching-hour': 0x2000,
-            'early-morning': 0x4000,
+            'early-morning': 0x4400,
             'morning':       0x6000,
             'noon':          0x8000,
             'afternoon':     0xA000,
@@ -958,7 +963,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     if world.starting_age == 'adult':
         save_context.addresses['link_age'].value = False                    # Set link's age to adult
-        save_context.addresses['scene_index'].value = 0x43                  # Set the scene index to Temple of Time
+
+        if not SamCustom.ADULT_STARTS_AT_KOKIRI:
+            save_context.addresses['scene_index'].value = 0x43                  # Set the scene index to Temple of Time
         save_context.addresses['equip_items']['master_sword'].value = True  # Equip Master Sword by default
         save_context.addresses['equip_items']['kokiri_tunic'].value = True  # Equip Kokiri Tunic & Kokiri Boots by default
         save_context.addresses['equip_items']['kokiri_boots'].value = True  # (to avoid issues when going back child for the first time)
