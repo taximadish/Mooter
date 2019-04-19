@@ -24,6 +24,8 @@ typedef void(*usebutton_t)(z64_game_t *game, z64_link_t *link, uint8_t item, uin
 #define DEKU_SHIELD		1
 #define HYLIAN_SHIELD	2
 
+int hood_equipped = 0;
+
 void handle_dpad() {
     uint16_t pad_pressed = z64_game.common.input[0].pad_pressed;
 
@@ -51,6 +53,11 @@ void handle_dpad() {
             }
 		}
 		else if (z64_file.link_age == CHILD) {
+			if ((pad_pressed & DPAD_U) && z64_game.pause_ctxt.state == 0) {
+				hood_equipped = !hood_equipped;
+			}
+			z64_file.scene_index = 0xF7 + hood_equipped;
+
 			if (pad_pressed & DPAD_L && z64_file.deku_shield) {
 				if (z64_file.equip_shield == DEKU_SHIELD) return;
 				else z64_file.equip_shield = DEKU_SHIELD;
@@ -65,6 +72,7 @@ void handle_dpad() {
 				z64_playsfx(0x81F, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
 			}
 		}
+
         if ((pad_pressed & DPAD_D) && CAN_USE_OCARINA){
             z64_usebutton(&z64_game,&z64_link,z64_file.items[0x07], 2);
         }
@@ -115,6 +123,16 @@ void draw_dpad() {
                 sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
             }
         }
+
+		if (z64_file.link_age == CHILD) {
+			sprite_load(db, &items_sprite, Z64_ITEM_BUNNY_HOOD, 1);
+			if (hood_equipped) {
+				sprite_draw(db, &items_sprite, 0, 271, 51, 16, 16);
+			}
+			else {
+				sprite_draw(db, &items_sprite, 0, 273, 53, 12, 12);
+			}
+		}
 
 		if (z64_file.deku_shield && z64_file.link_age == CHILD) {
 			sprite_load(db, &items_sprite, Z64_ITEM_DEKU_SHIELD, 1);

@@ -9,6 +9,7 @@ import random
 import itertools
 import bisect
 import logging
+import SamCustom
 
 def is_bundled():
     return getattr(sys, 'frozen', False)
@@ -90,6 +91,7 @@ class VersionError(Exception):
     pass
 
 def check_version(checked_version):
+    if SamCustom.IGNORE_VERSION: return
     if compare_version(checked_version, __version__) < 0:
         try:
             with urllib.request.urlopen('http://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/Dev/version.py') as versionurl:
